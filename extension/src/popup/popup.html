@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Downloader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1>Video Downloader</h1>
+      <div class="server-controls">
+        <div class="server-status" id="serverStatus">
+          <span class="status-indicator offline"></span>
+          <span class="status-text">Verificando...</span>
+        </div>
+        <div class="server-buttons" id="serverButtons">
+          <button class="btn-server start" id="btnStartServer" title="Iniciar Servidor" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </button>
+          <button class="btn-server stop" id="btnStopServer" title="Parar Servidor" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Info -->
+    <div class="page-info" id="pageInfo">
+      <span class="page-title" id="pageTitle">-</span>
+    </div>
+
+    <!-- Videos List -->
+    <div class="videos-section">
+      <div class="section-header">
+        <h2>Vídeos Detectados</h2>
+        <button class="btn-refresh" id="btnRefresh" title="Atualizar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="videos-list" id="videosList">
+        <div class="empty-state">
+          <p>Nenhum vídeo detectado nesta página.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Downloads Section -->
+    <div class="downloads-section" id="downloadsSection">
+      <div class="section-header">
+        <h2>Downloads</h2>
+        <div class="header-buttons">
+          <button class="btn-clear-history" id="btnClearHistory" title="Limpar histórico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+          <button class="btn-open-folder" id="btnOpenFolder" title="Abrir pasta de downloads">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="download-path" id="downloadPath">
+        <span class="path-label">Pasta:</span>
+        <span class="path-value" id="pathValue">-</span>
+      </div>
+      <div class="downloads-list" id="downloadsList">
+        <div class="empty-downloads">Nenhum download ativo</div>
+      </div>
+    </div>
+
+    <!-- Manual URL Input -->
+    <div class="manual-section">
+      <div class="section-header">
+        <h2>URL Manual</h2>
+      </div>
+      <div class="manual-input">
+        <input type="text" id="manualUrl" placeholder="Cole a URL do vídeo aqui...">
+        <button class="btn-download" id="btnManualDownload">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Download Options Modal -->
+    <div class="modal" id="optionsModal">
+      <div class="modal-content">
+        <h3>Opções de Download</h3>
+        <div class="option-group">
+          <label for="qualitySelect">Qualidade:</label>
+          <select id="qualitySelect">
+            <option value="best">Melhor disponível</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+            <option value="360">360p</option>
+            <option value="audio">Apenas áudio</option>
+          </select>
+        </div>
+        <div class="option-group">
+          <label for="formatSelect">Formato:</label>
+          <select id="formatSelect">
+            <option value="mp4">MP4</option>
+            <option value="webm">WebM</option>
+            <option value="mkv">MKV</option>
+            <option value="mp3">MP3 (áudio)</option>
+          </select>
+        </div>
+        <div class="modal-buttons">
+          <button class="btn-secondary" id="btnCancelDownload">Cancelar</button>
+          <button class="btn-primary" id="btnConfirmDownload">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

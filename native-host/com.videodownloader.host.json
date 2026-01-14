@@ -1,0 +1,9 @@
+{
+  "name": "com.videodownloader.host",
+  "description": "Video Downloader Native Messaging Host",
+  "path": "/Users/lucasttn/Documents/Documents/Antigravity - Projects/TESTE-Video-Downloader/native-host/video_downloader_host.py",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ndmgifcflgjkcggeflimjajanalfjicl/"
+  ]
+}
