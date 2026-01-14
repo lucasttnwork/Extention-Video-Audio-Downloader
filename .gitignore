@@ -35,3 +35,25 @@ yarn-error.log*
 .playwright-mcp/
 tmp/
 temp/
+
+# FFmpeg binaries (users should install system-wide)
+server/bin/ffmpeg
+server/bin/ffprobe
+
+# Runtime files
+*.pid
+server.pid
+native-host/server.pid
+
+# Test downloads
+Downloads/
+VideoDownloader/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyo
+*.egg-info/
+dist/
+build/
