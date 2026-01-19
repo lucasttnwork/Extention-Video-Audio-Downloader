@@ -162,8 +162,10 @@ class Downloader:
             logger.error("  FFmpeg not available for MP3 conversion")
             return None
 
+        import sys
         mp3_path = video_path.with_suffix(".mp3")
-        ffmpeg_path = Path(config.FFMPEG_LOCATION) / "ffmpeg"
+        exe_suffix = ".exe" if sys.platform == "win32" else ""
+        ffmpeg_path = Path(config.FFMPEG_LOCATION) / f"ffmpeg{exe_suffix}"
 
         logger.info(f"  Converting to MP3: {video_path.name} -> {mp3_path.name}")
 

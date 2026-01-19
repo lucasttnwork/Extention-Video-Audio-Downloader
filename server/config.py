@@ -31,14 +31,18 @@ _FFMPEG_DIRS = [
 
 def _find_ffmpeg():
     """Find ffmpeg directory that has both ffmpeg and ffprobe."""
+    import sys
+    # On Windows, executables have .exe extension
+    exe_suffix = ".exe" if sys.platform == "win32" else ""
+
     for path in _FFMPEG_DIRS:
         if not path:
             continue
         # If path is a file, get its directory
         if os.path.isfile(path):
             path = os.path.dirname(path)
-        ffmpeg = os.path.join(path, "ffmpeg")
-        ffprobe = os.path.join(path, "ffprobe")
+        ffmpeg = os.path.join(path, f"ffmpeg{exe_suffix}")
+        ffprobe = os.path.join(path, f"ffprobe{exe_suffix}")
         if os.path.isfile(ffmpeg) and os.path.isfile(ffprobe):
             return path
     return None

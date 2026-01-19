@@ -1,9 +1,9 @@
 {
   "name": "com.videodownloader.host",
   "description": "Video Downloader Native Messaging Host",
-  "path": "/ABSOLUTE/PATH/TO/YOUR/PROJECT/native-host/video_downloader_host.py",
+  "path": "C:/Users/Lucas/OneDrive/Documentos/PROJETOS - CODE/GOOGLE ANTIGRAVITY PROJECTS/Extention-Video-Audio-Downloader/native-host/video_downloader_host.bat",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://YOUR_EXTENSION_ID_HERE/"
+    "chrome-extension://bpjecbfkdkgicacmaghgbdinpjfphmhn/"
   ]
 }

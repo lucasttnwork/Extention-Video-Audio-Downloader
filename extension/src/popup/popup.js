@@ -198,6 +198,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Aguarda até que o servidor esteja offline
+   * @param {number} maxAttempts - Número máximo de tentativas
+   * @param {number} intervalMs - Intervalo entre tentativas em ms
+   * @returns {Promise<boolean>} - True se servidor está offline
+   */
+  async function waitForServerOffline(maxAttempts = 10, intervalMs = 1000) {
+    for (let i = 0; i < maxAttempts; i++) {
+      // Verifica imediatamente na primeira tentativa, depois aguarda
+      if (i > 0) {
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
+      }
+
+      try {
+        const response = await chrome.runtime.sendMessage({ type: 'CHECK_SERVER' });
+        console.log(`[POLLING ${i + 1}/${maxAttempts}] Server online:`, response.online);
+        if (!response.online) {
+          return true; // Servidor está offline
+        }
+      } catch (error) {
+        console.log(`[POLLING ${i + 1}/${maxAttempts}] Erro (servidor offline):`, error.message);
+        return true; // Erro ao verificar = servidor offline
+      }
+    }
+    return false; // Timeout
+  }
+
+  /**
    * Start the server
    */
   async function startServer() {
@@ -226,24 +253,53 @@ document.addEventListener('DOMContentLoaded', () => {
    * Stop the server
    */
   async function stopServer() {
+    const indicator = serverStatusEl.querySelector('.status-indicator');
+    const text = serverStatusEl.querySelector('.status-text');
+
+    console.log('[STOP] Iniciando processo de parada...');
+
     try {
+      // Desabilita ambos os botões e mostra loading
       btnStopServer.disabled = true;
+      btnStartServer.disabled = true;
       btnStopServer.classList.add('loading');
 
-      const response = await chrome.runtime.sendMessage({ type: 'STOP_SERVER' });
+      // Atualiza status visual
+      text.textContent = 'Parando servidor...';
 
-      if (response.success) {
+      // Envia comando de stop
+      console.log('[STOP] Enviando comando STOP_SERVER...');
+      const response = await chrome.runtime.sendMessage({ type: 'STOP_SERVER' });
+      console.log('[STOP] Resposta do native host:', response);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Erro ao parar servidor');
+      }
+
+      // Aguarda confirmação de que servidor parou (até 15 segundos, verificando a cada 500ms)
+      console.log('[STOP] Iniciando polling para verificar se servidor parou...');
+      const stopped = await waitForServerOffline(30, 500);
+      console.log('[STOP] Resultado do polling:', stopped ? 'OFFLINE' : 'AINDA ONLINE');
+
+      if (stopped) {
+        // Sucesso: servidor confirmadamente offline
         showToast('Servidor parado!', 'success');
-        setTimeout(checkServerStatus, 500);
+        await checkServerStatus(); // Atualiza UI
       } else {
-        showToast(response.error || 'Erro ao parar servidor', 'error');
-        btnStopServer.disabled = false;
+        // Timeout: servidor não parou em 10 segundos
+        showToast('Servidor não respondeu. Pode ainda estar ativo.', 'warning');
+        btnStopServer.disabled = false; // Permite nova tentativa
+        await checkServerStatus(); // Verifica estado real
       }
     } catch (error) {
-      showToast('Erro: Native host não encontrado', 'error');
-      btnStopServer.disabled = false;
+      console.error('[STOP] Erro:', error);
+      showToast(`Erro: ${error.message}`, 'error');
+      btnStopServer.disabled = false; // Re-habilita para tentar novamente
+      await checkServerStatus(); // Atualiza estado real
     } finally {
       btnStopServer.classList.remove('loading');
+      btnStartServer.disabled = false; // Re-habilita Start
+      console.log('[STOP] Processo de parada finalizado');
     }
   }
 

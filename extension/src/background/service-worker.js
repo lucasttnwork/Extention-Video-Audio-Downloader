@@ -279,10 +279,21 @@ async function getNativeServerStatus() {
  */
 async function checkServerStatus() {
   try {
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
     const response = await fetch(`${SERVER_URL}/api/status`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      },
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (response.ok) {
       const data = await response.json();
@@ -441,22 +452,27 @@ async function handleDownloadRequest(data) {
 
     const result = await response.json();
 
-    if (response.ok) {
-      // Notificação de sucesso
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icons/icon128.png',  // Caminho relativo à raiz da extensão
-        title: 'Download Iniciado',
-        message: `${data.title || 'Vídeo'} adicionado à fila de download`
-      });
-    } else if (result.extraction_required) {
-      // Hub.la precisa de extração
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icons/icon128.png',
-        title: 'Aguarde o vídeo carregar',
-        message: result.hint || 'Aguarde o vídeo carregar na página e tente novamente'
-      });
+    // Create notifications in try/catch to prevent errors from affecting the response
+    try {
+      if (response.ok) {
+        // Notificação de sucesso
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon128.png',  // Caminho relativo à raiz da extensão
+          title: 'Download Iniciado',
+          message: `${data.title || 'Vídeo'} adicionado à fila de download`
+        });
+      } else if (result.extraction_required) {
+        // Hub.la precisa de extração
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon128.png',
+          title: 'Aguarde o vídeo carregar',
+          message: result.hint || 'Aguarde o vídeo carregar na página e tente novamente'
+        });
+      }
+    } catch (notifError) {
+      console.warn('[Video Downloader] Notification error (non-critical):', notifError);
     }
 
     return result;
